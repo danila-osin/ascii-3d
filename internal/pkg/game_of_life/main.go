@@ -23,6 +23,9 @@ type GameOfLife struct {
 }
 
 func New(config config.Config, screen *screen.Screen, deadCell, aliveCell string) GameOfLife {
+	screen.PixelSeparator = " "
+	screen.EmptyPixel = "."
+
 	return GameOfLife{
 		config:    config,
 		screen:    screen,
@@ -33,7 +36,7 @@ func New(config config.Config, screen *screen.Screen, deadCell, aliveCell string
 
 func (g GameOfLife) Run() {
 	g.setRandomInitialState()
-	g.screen.Render(true)
+	g.screen.Render(true, true)
 	fmt.Println("Starting...")
 
 	time.Sleep(2 * time.Second)
@@ -89,7 +92,7 @@ func (g GameOfLife) countNeighbours(y, x int) (alive, dead int) {
 	maxI := int(math.Min(float64(y+1), float64(len(matrix)-1)))
 
 	minJ := int(math.Max(0, float64(x-1)))
-	maxJ := int(math.Min(float64(x+1), float64(len(matrix)-1)))
+	maxJ := int(math.Min(float64(x+1), float64(len(matrix[0])-1)))
 
 	for i := minI; i <= maxI; i++ {
 		for j := minJ; j <= maxJ; j++ {

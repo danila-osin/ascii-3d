@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/danila-osin/ascii-3d/internal/config"
+	"github.com/danila-osin/ascii-3d/internal/pkg/function_graph"
 	"github.com/danila-osin/ascii-3d/internal/pkg/game_of_life"
 	"github.com/danila-osin/ascii-3d/internal/screen"
 )
@@ -19,11 +20,14 @@ func main() {
 	flags := parseFlags()
 
 	c := config.New(flags.screenHeight, flags.screenWidth, flags.frameRate)
-	s := screen.New(c)
+	s := screen.New(c, "", " ")
 
 	switch flags.mode {
 	case "life":
-		runLife(c, s)
+		runGameOfLife(c, s)
+		return
+	case "graph":
+		runFunctionGraph(c, s)
 		return
 	default:
 		fmt.Println("Unknown Mode '" + flags.mode + "'")
@@ -34,7 +38,7 @@ func parseFlags() appFlags {
 	screenHeight := flag.Int("h", 50, "Screen Height")
 	screenWidth := flag.Int("w", 50, "Screen Width")
 	frameRate := flag.Int("fr", 20, "Frame Rate")
-	mode := flag.String("m", "unknown", "App Mode [life]")
+	mode := flag.String("m", "unknown", "App Mode [life, graph]")
 
 	flag.Parse()
 
@@ -46,7 +50,12 @@ func parseFlags() appFlags {
 	}
 }
 
-func runLife(c config.Config, s *screen.Screen) {
+func runGameOfLife(c config.Config, s *screen.Screen) {
 	gameOfLife := game_of_life.New(c, s, ".", "X")
 	gameOfLife.Run()
+}
+
+func runFunctionGraph(c config.Config, s *screen.Screen) {
+	functionGraph := function_graph.New(c, s)
+	functionGraph.Run()
 }
