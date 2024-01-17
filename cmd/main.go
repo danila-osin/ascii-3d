@@ -4,9 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"github.com/danila-osin/ascii-3d/internal/config"
+	"github.com/danila-osin/ascii-3d/internal/pkg/controls_showcase"
 	"github.com/danila-osin/ascii-3d/internal/pkg/function_graph"
 	"github.com/danila-osin/ascii-3d/internal/pkg/game_of_life"
-	"github.com/danila-osin/ascii-3d/internal/screen"
+	"github.com/danila-osin/ascii-3d/pkg/screen"
 )
 
 type appFlags struct {
@@ -28,6 +29,9 @@ func main() {
 		return
 	case "graph":
 		runFunctionGraph(c, s)
+		return
+	case "controls":
+		runControlsShowcase(c, s)
 		return
 	default:
 		fmt.Println("Unknown Mode '" + flags.mode + "'")
@@ -57,5 +61,10 @@ func runGameOfLife(c config.Config, s *screen.Screen) {
 
 func runFunctionGraph(c config.Config, s *screen.Screen) {
 	functionGraph := function_graph.New(c, s)
+	functionGraph.Run()
+}
+
+func runControlsShowcase(c config.Config, s *screen.Screen) {
+	functionGraph := controls_showcase.New(c, s)
 	functionGraph.Run()
 }

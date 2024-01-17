@@ -3,7 +3,8 @@ package game_of_life
 import (
 	"fmt"
 	"github.com/danila-osin/ascii-3d/internal/config"
-	"github.com/danila-osin/ascii-3d/internal/screen"
+	"github.com/danila-osin/ascii-3d/pkg/geometry"
+	"github.com/danila-osin/ascii-3d/pkg/screen"
 	"math"
 	"math/rand"
 	"time"
@@ -47,7 +48,7 @@ func (g GameOfLife) Run() {
 }
 
 func (g GameOfLife) setRandomInitialState() {
-	g.screen.IterateAndSet(func(y, x int, _ string) string {
+	g.screen.IterateAndSet(func(_ geometry.Vec2[int], _ string) string {
 		random := rand.Float64()
 		chance := 1. / 3.
 
@@ -62,8 +63,8 @@ func (g GameOfLife) setRandomInitialState() {
 func (g GameOfLife) startRenderLoop(frameFn func(frameCounter int)) {
 	frameCounter := 1
 	g.screen.StartRenderLoop(true, func() {
-		g.screen.IterateAndSet(func(y, x int, value string) string {
-			aliveCount, _ := g.countNeighbours(y, x)
+		g.screen.IterateAndSet(func(cursor geometry.Vec2[int], value string) string {
+			aliveCount, _ := g.countNeighbours(cursor)
 
 			imAlive := value == AliveCell
 			if imAlive {
@@ -85,8 +86,11 @@ func (g GameOfLife) startRenderLoop(frameFn func(frameCounter int)) {
 	})
 }
 
-func (g GameOfLife) countNeighbours(y, x int) (alive, dead int) {
+func (g GameOfLife) countNeighbours(position geometry.Vec2[int]) (alive, dead int) {
 	matrix := g.screen.Matrix
+
+	x := position.X
+	y := position.Y
 
 	minI := int(math.Max(0, float64(y-1)))
 	maxI := int(math.Min(float64(y+1), float64(len(matrix)-1)))

@@ -2,10 +2,12 @@ package function_graph
 
 import (
 	"fmt"
-	"github.com/danila-osin/ascii-3d/internal/calculator"
 	"github.com/danila-osin/ascii-3d/internal/config"
-	"github.com/danila-osin/ascii-3d/internal/screen"
+	"github.com/danila-osin/ascii-3d/pkg/calculator"
+	"github.com/danila-osin/ascii-3d/pkg/geometry"
+	"github.com/danila-osin/ascii-3d/pkg/screen"
 	"math"
+	"time"
 )
 
 var functions = calculator.Functions{}
@@ -27,15 +29,15 @@ func New(config config.Config, screen *screen.Screen) FunctionGraph {
 func (f FunctionGraph) Run() {
 	f.setInitialState()
 	f.screen.Render(true, false)
-	//time.Sleep(2 * time.Second)
+	time.Sleep(2 * time.Second)
 
 	f.startRenderLoop()
 }
 
 func (f FunctionGraph) setInitialState() {
-	f.screen.IterateAndSet(func(rawY, rawX int, value string) string {
-		y := float64((f.screen.Height-1)/2 - (rawY))
-		x := float64((rawX) - (f.screen.Width-1)/2)
+	f.screen.IterateAndSet(func(rawCursor geometry.Vec2[int], value string) string {
+		x := float64((rawCursor.X) - (f.screen.Size.W-1)/2)
+		y := float64((f.screen.Size.H-1)/2 - (rawCursor.Y))
 
 		if calculator.Eq(y, 0, 0) {
 			return "."
@@ -49,36 +51,27 @@ func (f FunctionGraph) setInitialState() {
 	})
 }
 
-//func (f FunctionGraph) testLInes() {
-//	y0 := 2
-//	x0 := 2
-//
-//	y1 := 20
-//	x1 := 20
-//
-//	dx := int(math.Abs(float64(x0 - x1)))
-//	dy := int(math.Abs(float64(y0 - y1)))
-//
-//	f.screen.IterateAndSet(func(rawY, rawX int, value string) string {
-//		if calculator.Bt(rawX, x0, x1) && calculator.Bt(rawY, y0, y1) {
-//
-//		}
-//
-//		return " "
-//	})
-//}
-
 func (f FunctionGraph) startRenderLoop() {
 	frameCounter := 1
 	a := 0.
 	direction := 1.
 
 	f.screen.StartRenderLoop(true, func() {
-		f.screen.IterateAndSet(func(rawY, rawX int, value string) string {
-			y := float64((f.screen.Height-1)/2 - (rawY))
-			x := float64((rawX) - (f.screen.Width-1)/2)
+		f.screen.IterateAndSet(func(rawCursor geometry.Vec2[int], value string) string {
+			y := float64((f.screen.Size.H-1)/2-(rawCursor.Y)) + 5
+			x := float64((rawCursor.X)-(f.screen.Size.W-1)/2) + 5
 
 			if functions.Circle(x, y, 5, 2, math.Abs(a*2), 0) {
+				return "x"
+			}
+			if functions.Circle(x, y, -5, -2, math.Abs(a*2), 0) {
+				return "x"
+			}
+
+			if functions.Line(x, y, a, 0, 0) {
+				return "x"
+			}
+			if functions.Line(x, y, -a, 0, 0) {
 				return "x"
 			}
 

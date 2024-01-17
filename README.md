@@ -8,6 +8,7 @@ ASCII 3d/2d render engine for console
 ### General
 * ~~Framerate Setting~~
 * ~~Screen Size Setting~~
+* Keyboard controls
 * Configuration using TOML file
 
 ### 2D
