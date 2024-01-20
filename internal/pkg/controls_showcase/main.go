@@ -28,7 +28,7 @@ func New(config config.Config, screen *screen.Screen) ControlsShowcase {
 
 func (cs ControlsShowcase) Run() {
 	cs.setInitialState()
-	cs.screen.AddText(geometry.Vec2[int]{X: 5, Y: 5}, cs.controls.Descriptions)
+	cs.screen.AddText(geometry.Vec2[int]{X: 5, Y: 5}, cs.controls.Descriptions.Text())
 	cs.screen.Render(false, false)
 	time.Sleep(2 * time.Second)
 
@@ -43,7 +43,7 @@ func (cs ControlsShowcase) setInitialState() {
 }
 
 func (cs ControlsShowcase) startRenderLoop() {
-	cs.screen.StartRenderLoop(true, func() {
+	cs.screen.StartRenderLoop(false, func() {
 		cs.screen.IterateAndSet(func(rawCursor geometry.Vec2[int], value string) string {
 			if (rawCursor.X+cs.offset.X)%5 == 0 {
 				return "x"
@@ -56,6 +56,6 @@ func (cs ControlsShowcase) startRenderLoop() {
 			return cs.screen.EmptyPixel
 		})
 
-		cs.screen.AddText(geometry.Vec2[int]{X: 5, Y: 5}, cs.controls.Descriptions)
+		cs.screen.AddText(geometry.Vec2[int]{X: 5, Y: 5}, cs.controls.Descriptions.Text())
 	}, func() {})
 }

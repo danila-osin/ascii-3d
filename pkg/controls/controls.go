@@ -1,29 +1,25 @@
 package controls
 
 import (
-	"fmt"
 	"github.com/danila-osin/ascii-3d/internal/config"
 	"github.com/eiannone/keyboard"
 	"slices"
-	"strings"
 )
 
 type Controls struct {
-	config      config.Config
-	runeActions []RuneAction
-	keyActions  []KeyAction
+	config  config.Config
+	actions []Action
 
-	Closed       bool
-	Descriptions []string
+	Closed bool
+	Descriptions
 }
 
-func New(config config.Config, runeActions []RuneAction, keyActions []KeyAction) *Controls {
+func New(config config.Config, actions []Action) *Controls {
 	return &Controls{
-		config:      config,
-		runeActions: runeActions,
-		keyActions:  keyActions,
+		config:  config,
+		actions: actions,
 
-		Descriptions: createDescriptions(runeActions, keyActions),
+		Descriptions: newDescriptions(actions),
 	}
 }
 
@@ -42,22 +38,14 @@ func (c *Controls) Listen() {
 			break
 		}
 
-		char, key, err := keyboard.GetKey()
+		char, _, err := keyboard.GetKey()
 		if err != nil {
 			panic(err)
 		}
 
-		for _, action := range c.runeActions {
-			if slices.Contains(action.Runes, char) {
-				for _, handler := range action.Handlers {
-					handler(c)
-				}
-			}
-		}
-
-		for _, action := range c.keyActions {
-			if slices.Contains(action.Keys, key) {
-				for _, handler := range action.Handlers {
+		for i := range c.actions {
+			if slices.Contains(c.actions[i].Keys, string(char)) {
+				for _, handler := range c.actions[i].Handlers {
 					handler(c)
 				}
 			}
@@ -68,35 +56,4 @@ func (c *Controls) Listen() {
 func (c *Controls) Close() {
 	_ = keyboard.Close()
 	c.Closed = true
-}
-
-func createDescriptions(runeActions []RuneAction, _ []KeyAction) []string {
-	var descriptions []string
-
-	maxLen := 0
-	for _, action := range runeActions {
-		var descriptionKeys []string
-		for _, r := range action.Runes {
-			descriptionKeys = append(descriptionKeys, string(r))
-		}
-
-		description := fmt.Sprintf("%s: (%s)", action.Description, strings.Join(descriptionKeys, ", "))
-		descriptions = append(descriptions, description)
-
-		if descLen := len(description); descLen > maxLen {
-			maxLen = descLen
-		}
-	}
-
-	for i, description := range descriptions {
-		if diff := maxLen - len(description); diff > 0 {
-			tail := strings.Repeat(" ", diff)
-			description = description + tail
-		}
-
-		descriptions[i] = fmt.Sprintf("| %s |", description)
-	}
-
-	line := strings.Repeat("-", maxLen+4)
-	return append(append([]string{line}, descriptions...), line)
 }

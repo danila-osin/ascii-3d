@@ -17,7 +17,7 @@ ASCII 3d/2d render engine for console
   * setting initial state by keyboard
   * changing field size by keyboard
 * Function Graph (`in progress`)
-  * learn rasterizing
+  * learn rasterisation
   * scaling
   * moving
   * dynamic parameter

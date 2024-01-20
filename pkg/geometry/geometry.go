@@ -1,5 +1,9 @@
 package geometry
 
+var (
+	ZeroVec2Int = Vec2[int]{X: 0, Y: 0}
+)
+
 type Number interface {
 	int | float64
 }

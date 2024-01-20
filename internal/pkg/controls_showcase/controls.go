@@ -5,13 +5,12 @@ import (
 	"github.com/danila-osin/ascii-3d/internal/config"
 	"github.com/danila-osin/ascii-3d/pkg/controls"
 	"github.com/danila-osin/ascii-3d/pkg/geometry"
-	"github.com/eiannone/keyboard"
 )
 
 func createControls(config config.Config, offset *geometry.Vec2[int]) *controls.Controls {
-	runeActions := []controls.RuneAction{
+	actions := []controls.Action{
 		{
-			Runes:       []rune{'a'},
+			Keys:        []string{"a"},
 			Description: "+X offset",
 			Handlers: []controls.ActionHandler{
 				func(_ *controls.Controls) {
@@ -20,7 +19,7 @@ func createControls(config config.Config, offset *geometry.Vec2[int]) *controls.
 			},
 		},
 		{
-			Runes:       []rune{'d'},
+			Keys:        []string{"d"},
 			Description: "-X offset",
 			Handlers: []controls.ActionHandler{
 				func(_ *controls.Controls) {
@@ -29,7 +28,7 @@ func createControls(config config.Config, offset *geometry.Vec2[int]) *controls.
 			},
 		},
 		{
-			Runes:       []rune{'w'},
+			Keys:        []string{"w"},
 			Description: "-Y offset",
 			Handlers: []controls.ActionHandler{
 				func(_ *controls.Controls) {
@@ -38,7 +37,7 @@ func createControls(config config.Config, offset *geometry.Vec2[int]) *controls.
 			},
 		},
 		{
-			Runes:       []rune{'s'},
+			Keys:        []string{"s"},
 			Description: "+Y offset",
 			Handlers: []controls.ActionHandler{
 				func(_ *controls.Controls) {
@@ -47,7 +46,7 @@ func createControls(config config.Config, offset *geometry.Vec2[int]) *controls.
 			},
 		},
 		{
-			Runes:       []rune{'+'},
+			Keys:        []string{"+"},
 			Description: "ZoomIn",
 			Handlers: []controls.ActionHandler{
 				func(_ *controls.Controls) {
@@ -56,7 +55,7 @@ func createControls(config config.Config, offset *geometry.Vec2[int]) *controls.
 			},
 		},
 		{
-			Runes:       []rune{'-'},
+			Keys:        []string{"-"},
 			Description: "ZoomOut",
 			Handlers: []controls.ActionHandler{
 				func(_ *controls.Controls) {
@@ -66,7 +65,7 @@ func createControls(config config.Config, offset *geometry.Vec2[int]) *controls.
 		},
 
 		{
-			Runes:       []rune{'q'},
+			Keys:        []string{"q"},
 			Description: "Exit",
 			Handlers: []controls.ActionHandler{
 				func(c *controls.Controls) {
@@ -77,18 +76,5 @@ func createControls(config config.Config, offset *geometry.Vec2[int]) *controls.
 		},
 	}
 
-	keyActions := []controls.KeyAction{
-		{
-			Keys:        []keyboard.Key{keyboard.KeyEsc, keyboard.KeyDelete},
-			Description: "Exit",
-			Handlers: []controls.ActionHandler{
-				func(c *controls.Controls) {
-					fmt.Println("Exit...")
-					c.Close()
-				},
-			},
-		},
-	}
-
-	return controls.New(config, runeActions, keyActions)
+	return controls.New(config, actions)
 }
