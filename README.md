@@ -8,7 +8,8 @@ ASCII 3d/2d render engine for console
 ### General
 * ~~Framerate Setting~~
 * ~~Screen Size Setting~~
-* Keyboard controls
+* ~~Keyboard controls~~
+  * ~~controls description on screen~~
 * Configuration using TOML file
 
 ### 2D
@@ -17,7 +18,7 @@ ASCII 3d/2d render engine for console
   * setting initial state by keyboard
   * changing field size by keyboard
 * Function Graph (`in progress`)
-  * learn rasterisation
+  * research rasterisation
   * scaling
   * moving
   * dynamic parameter
