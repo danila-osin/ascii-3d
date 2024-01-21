@@ -14,13 +14,14 @@ type appFlags struct {
 	screenHeight int
 	screenWidth  int
 	frameRate    int
+	fontAspect   float64
 	mode         string
 }
 
 func main() {
 	flags := parseFlags()
 
-	c := config.New(flags.screenHeight, flags.screenWidth, flags.frameRate)
+	c := config.New(flags.screenHeight, flags.screenWidth, flags.frameRate, flags.fontAspect)
 	s := screen.New(c, "", " ")
 
 	switch flags.mode {
@@ -38,22 +39,6 @@ func main() {
 	}
 }
 
-func parseFlags() appFlags {
-	screenHeight := flag.Int("h", 50, "Screen Height")
-	screenWidth := flag.Int("w", 50, "Screen Width")
-	frameRate := flag.Int("fr", 20, "Frame Rate")
-	mode := flag.String("m", "unknown", "App Mode [life, graph]")
-
-	flag.Parse()
-
-	return appFlags{
-		screenHeight: *screenHeight,
-		screenWidth:  *screenWidth,
-		frameRate:    *frameRate,
-		mode:         *mode,
-	}
-}
-
 func runGameOfLife(c config.Config, s *screen.Screen) {
 	gameOfLife := game_of_life.New(c, s, ".", "X")
 	gameOfLife.Run()
@@ -67,4 +52,22 @@ func runFunctionGraph(c config.Config, s *screen.Screen) {
 func runControlsShowcase(c config.Config, s *screen.Screen) {
 	functionGraph := controls_showcase.New(c, s)
 	functionGraph.Run()
+}
+
+func parseFlags() appFlags {
+	screenHeight := flag.Int("h", 50, "Screen Height")
+	screenWidth := flag.Int("w", 50, "Screen Width")
+	frameRate := flag.Int("fr", 20, "Frame Rate")
+	fontAspect := flag.Float64("fa", 0.4, "Font Aspect")
+	mode := flag.String("m", "unknown", "App Mode [life, graph]")
+
+	flag.Parse()
+
+	return appFlags{
+		screenHeight: *screenHeight,
+		screenWidth:  *screenWidth,
+		frameRate:    *frameRate,
+		mode:         *mode,
+		fontAspect:   *fontAspect,
+	}
 }

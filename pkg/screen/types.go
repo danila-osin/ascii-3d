@@ -3,7 +3,7 @@ package screen
 import "github.com/danila-osin/ascii-3d/pkg/geometry"
 
 type Size struct {
-	H, W int
+	W, H int
 }
 
 type iteratorFunc func(cursor geometry.Vec2[int], value string)

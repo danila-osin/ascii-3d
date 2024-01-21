@@ -10,8 +10,8 @@ type Controls struct {
 	config  config.Config
 	actions []Action
 
-	Closed bool
-	Descriptions
+	Closed       bool
+	Descriptions Descriptions
 }
 
 func New(config config.Config, actions []Action) *Controls {

@@ -1,28 +1,39 @@
 package function_graph
 
 import (
-	"fmt"
 	"github.com/danila-osin/ascii-3d/internal/config"
 	"github.com/danila-osin/ascii-3d/pkg/calculator"
+	"github.com/danila-osin/ascii-3d/pkg/controls"
 	"github.com/danila-osin/ascii-3d/pkg/geometry"
 	"github.com/danila-osin/ascii-3d/pkg/screen"
+	"github.com/danila-osin/ascii-3d/pkg/shapes"
 	"math"
 	"time"
 )
 
-var functions = calculator.Functions{}
+var ControlsPosition = geometry.Vec2[int]{X: 2, Y: 2}
+
+type State struct {
+	cameraPos geometry.Vec2[float64]
+	scale     float64
+}
 
 type FunctionGraph struct {
-	config config.Config
-	screen *screen.Screen
+	config   config.Config
+	screen   *screen.Screen
+	state    *State
+	controls *controls.Controls
 }
 
 func New(config config.Config, screen *screen.Screen) FunctionGraph {
-	screen.PixelSeparator = " "
+	state := &State{cameraPos: geometry.ZeroVec2Float, scale: 1}
+	screen.PixelSeparator = ""
 
 	return FunctionGraph{
-		config: config,
-		screen: screen,
+		config:   config,
+		screen:   screen,
+		state:    state,
+		controls: setupControls(config, state),
 	}
 }
 
@@ -31,13 +42,14 @@ func (f FunctionGraph) Run() {
 	f.screen.Render(true, false)
 	time.Sleep(2 * time.Second)
 
+	go f.controls.Listen()
 	f.startRenderLoop()
 }
 
 func (f FunctionGraph) setInitialState() {
 	f.screen.IterateAndSet(func(rawCursor geometry.Vec2[int], value string) string {
-		x := float64((rawCursor.X) - (f.screen.Size.W-1)/2)
-		y := float64((f.screen.Size.H-1)/2 - (rawCursor.Y))
+		x := float64(rawCursor.X)/float64(f.screen.Size.W)*2.0 - 1
+		y := float64(rawCursor.Y)/float64(f.screen.Size.H)*2.0 - 1
 
 		if calculator.Eq(y, 0, 0) {
 			return "."
@@ -49,50 +61,46 @@ func (f FunctionGraph) setInitialState() {
 
 		return value
 	})
+
+	f.screen.AddText(ControlsPosition, f.controls.Descriptions.Text())
 }
 
 func (f FunctionGraph) startRenderLoop() {
-	frameCounter := 1
-	a := 0.
-	direction := 1.
+	frameCounter := uint8(0)
+	a := 0.0
+	direction := 1.0
 
 	f.screen.StartRenderLoop(true, func() {
 		f.screen.IterateAndSet(func(rawCursor geometry.Vec2[int], value string) string {
-			y := float64((f.screen.Size.H-1)/2-(rawCursor.Y)) + 5
-			x := float64((rawCursor.X)-(f.screen.Size.W-1)/2) + 5
+			x := (float64(rawCursor.X)/float64(f.screen.Size.W)*2.0 - 1) * f.state.scale * f.screen.Aspect * f.config.FontAspect
+			y := (float64(rawCursor.Y)/float64(f.screen.Size.H)*2.0 - 1) * f.state.scale
 
-			if functions.Circle(x, y, 5, 2, math.Abs(a*2), 0) {
-				return "x"
-			}
-			if functions.Circle(x, y, -5, -2, math.Abs(a*2), 0) {
-				return "x"
-			}
+			x += f.state.cameraPos.X
+			y += f.state.cameraPos.Y
 
-			if functions.Line(x, y, a, 0, 0) {
-				return "x"
-			}
-			if functions.Line(x, y, -a, 0, 0) {
+			if shapes.Circle(x, y, 0, 0, 0.2) {
 				return "x"
 			}
 
-			if calculator.Eq(y, 0, 0) {
+			if calculator.Eq(y, 0, 0.005) {
 				return "."
 			}
 
-			if calculator.Eq(x, 0, 0) {
+			if calculator.Eq(x, 0, 0.005) {
 				return "."
 			}
 
 			return f.screen.EmptyPixel
 		})
+
+		f.screen.AddText(ControlsPosition, f.controls.Descriptions.Text())
 	}, func() {
 		frameCounter += 1
 
-		if math.Abs(a) > 10 {
+		if math.Abs(a) > 1 {
 			direction = -direction
 		}
 
-		a += direction * 0.1
-		fmt.Println(a)
+		a += direction * 0.01
 	})
 }

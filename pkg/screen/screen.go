@@ -17,10 +17,11 @@ type Screen struct {
 	Size           Size
 	PixelSeparator string
 	EmptyPixel     string
+	Aspect         float64
 }
 
 func New(config config.Config, pixelSeparator, emptyPixel string) *Screen {
-	size := Size{config.ScreenHeight, config.ScreenWidth}
+	size := Size{W: config.ScreenWidth, H: config.ScreenHeight}
 
 	return &Screen{
 		config: config,
@@ -29,6 +30,7 @@ func New(config config.Config, pixelSeparator, emptyPixel string) *Screen {
 		Size:           size,
 		PixelSeparator: pixelSeparator,
 		EmptyPixel:     emptyPixel,
+		Aspect:         float64(size.W) / float64(size.H),
 	}
 }
 
