@@ -4,17 +4,16 @@ import (
 	"fmt"
 	"github.com/danila-osin/ascii-3d/internal/config"
 	"github.com/danila-osin/ascii-3d/pkg/controls"
-	"github.com/danila-osin/ascii-3d/pkg/geometry"
 )
 
-func createControls(config config.Config, offset *geometry.Vec2[int]) *controls.Controls {
+func createControls(config config.Config, state *State) *controls.Controls {
 	actions := []controls.Action{
 		{
 			Keys:        []string{"a"},
 			Description: "+X offset",
 			Handlers: []controls.ActionHandler{
 				func(_ *controls.Controls) {
-					offset.X -= 1
+					state.offset.X -= 1
 				},
 			},
 		},
@@ -23,7 +22,7 @@ func createControls(config config.Config, offset *geometry.Vec2[int]) *controls.
 			Description: "-X offset",
 			Handlers: []controls.ActionHandler{
 				func(_ *controls.Controls) {
-					offset.X += 1
+					state.offset.X += 1
 				},
 			},
 		},
@@ -32,7 +31,7 @@ func createControls(config config.Config, offset *geometry.Vec2[int]) *controls.
 			Description: "-Y offset",
 			Handlers: []controls.ActionHandler{
 				func(_ *controls.Controls) {
-					offset.Y -= 1
+					state.offset.Y -= 1
 				},
 			},
 		},
@@ -41,29 +40,10 @@ func createControls(config config.Config, offset *geometry.Vec2[int]) *controls.
 			Description: "+Y offset",
 			Handlers: []controls.ActionHandler{
 				func(_ *controls.Controls) {
-					offset.Y += 1
+					state.offset.Y += 1
 				},
 			},
 		},
-		{
-			Keys:        []string{"+"},
-			Description: "ZoomIn",
-			Handlers: []controls.ActionHandler{
-				func(_ *controls.Controls) {
-					fmt.Println("Zoom In")
-				},
-			},
-		},
-		{
-			Keys:        []string{"-"},
-			Description: "ZoomOut",
-			Handlers: []controls.ActionHandler{
-				func(_ *controls.Controls) {
-					fmt.Println("Zoom Out")
-				},
-			},
-		},
-
 		{
 			Keys:        []string{"q"},
 			Description: "Exit",
