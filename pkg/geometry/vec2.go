@@ -1,18 +1,21 @@
 package geometry
 
-import "math"
+import (
+	"github.com/danila-osin/ascii-3d/pkg/calculator"
+	"math"
+)
 
 var (
 	ZeroVec2Int   = Vec2[int]{X: 0, Y: 0}
 	ZeroVec2Float = Vec2[float64]{X: 0, Y: 0}
 )
 
-type Vec2[T Number] struct {
+type Vec2[T calculator.Number] struct {
 	X, Y T
 }
 
 func (v Vec2[T]) Len() float64 {
-	return math.Sqrt(float64(v.X*v.X + v.Y*v.Y))
+	return math.Sqrt(float64(v.Dot(v)))
 }
 
 func (v Vec2[T]) Norm() Vec2[float64] {
@@ -49,4 +52,8 @@ func (v Vec2[T]) Div(o Vec2[T]) Vec2[T] {
 		X: v.X / o.X,
 		Y: v.Y / o.Y,
 	}
+}
+
+func (v Vec2[T]) Dot(o Vec2[T]) T {
+	return v.X*o.X + v.Y*o.Y
 }
