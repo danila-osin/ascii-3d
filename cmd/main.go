@@ -4,9 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/danila-osin/ascii-3d/internal/config"
-	"github.com/danila-osin/ascii-3d/internal/pkg/controls_showcase"
-	"github.com/danila-osin/ascii-3d/internal/pkg/function_graph"
-	"github.com/danila-osin/ascii-3d/internal/pkg/game_of_life"
+	"github.com/danila-osin/ascii-3d/internal/features/controls_showcase"
+	"github.com/danila-osin/ascii-3d/internal/features/function_graph"
+	"github.com/danila-osin/ascii-3d/internal/features/game_of_life"
 	"github.com/danila-osin/ascii-3d/pkg/screen"
 )
 
