@@ -71,21 +71,22 @@ func (f FunctionGraph) startRenderLoop() {
 
 	brFn := screen.BRenderFn(func() {
 		f.screen.IterateAndSet(func(rawCursor geometry.Vec2[int], value string) string {
-			x := (float64(rawCursor.X)/float64(f.screen.Size.W)*2.0 - 1) * f.state.scale * f.screen.Aspect * f.config.FontAspect
-			y := (float64(rawCursor.Y)/float64(f.screen.Size.H)*2.0 - 1) * f.state.scale
+			ssVec := geometry.Vec2FromSize[float64](f.screen.Size)
 
-			x += f.state.cameraPos.X
-			y += f.state.cameraPos.Y
+			cursor := rawCursor.Float64().Div(ssVec).MulN(2).SubN(1).MulN(f.state.scale)
+			cursor.X *= f.screen.Aspect * f.config.FontAspect
 
-			if shapes.Circle(x, y, 0, 0, 0.2) {
+			cursor = cursor.Add(f.state.cameraPos)
+
+			if shapes.Circle(cursor.X, cursor.Y, 0, 0, 0.2) {
 				return "x"
 			}
 
-			if calculator.Eq(y, 0, 0.005) {
+			if calculator.Eq(cursor.Y, 0, 0.005) {
 				return "."
 			}
 
-			if calculator.Eq(x, 0, 0.005) {
+			if calculator.Eq(cursor.X, 0, 0.005) {
 				return "."
 			}
 

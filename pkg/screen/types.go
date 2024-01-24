@@ -6,10 +6,10 @@ type Size struct {
 	W, H int
 }
 
-// BRenderFn Before Render Func
+// BRenderFn Calls before Render()
 type BRenderFn func()
 
-// ARenderFn After Render Func
+// ARenderFn Calls after Render()
 type ARenderFn func()
 
 type iteratorFn func(cursor geometry.Vec2[int], value string)

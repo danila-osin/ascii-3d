@@ -72,6 +72,7 @@ func (s Screen) StartRenderLoop(clear bool, beforeRenderFn *BRenderFn, afterRend
 	}
 }
 
+// Iterate TODO Create IterateRange method
 func (s Screen) Iterate(iteratorFn iteratorFn) {
 	for y := 0; y < s.Size.H; y++ {
 		for x := 0; x < s.Size.W; x++ {
