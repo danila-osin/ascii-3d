@@ -6,6 +6,12 @@ type Size struct {
 	W, H int
 }
 
-type iteratorFunc func(cursor geometry.Vec2[int], value string)
+// BRenderFn Before Render Func
+type BRenderFn func()
 
-type iteratorSetFunc func(cursor geometry.Vec2[int], value string) string
+// ARenderFn After Render Func
+type ARenderFn func()
+
+type iteratorFn func(cursor geometry.Vec2[int], value string)
+
+type iteratorSetFn func(cursor geometry.Vec2[int], value string) string

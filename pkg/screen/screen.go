@@ -12,8 +12,8 @@ import (
 
 type Screen struct {
 	config config.Config
+	matrix matrix
 
-	Matrix         Matrix
 	Size           Size
 	PixelSeparator string
 	EmptyPixel     string
@@ -25,8 +25,8 @@ func New(config config.Config, pixelSeparator, emptyPixel string) *Screen {
 
 	return &Screen{
 		config: config,
+		matrix: newMatrix(size, emptyPixel),
 
-		Matrix:         newMatrix(size, emptyPixel),
 		Size:           size,
 		PixelSeparator: pixelSeparator,
 		EmptyPixel:     emptyPixel,
@@ -41,7 +41,7 @@ func (s Screen) Render(clear bool, byLine bool) {
 
 	var matrixText string
 	for y := 0; y < s.Size.H; y++ {
-		lineText := strings.Join(s.Matrix[y], s.PixelSeparator)
+		lineText := strings.Join(s.matrix[y], s.PixelSeparator)
 
 		if byLine {
 			fmt.Println(lineText)
@@ -56,34 +56,44 @@ func (s Screen) Render(clear bool, byLine bool) {
 	}
 }
 
-func (s Screen) StartRenderLoop(clear bool, beforeRenderFn func(), afterRenderFn func()) {
+func (s Screen) StartRenderLoop(clear bool, beforeRenderFn *BRenderFn, afterRenderFn *ARenderFn) {
 	for {
-		beforeRenderFn()
+		if beforeRenderFn != nil {
+			(*beforeRenderFn)()
+		}
+
 		s.Render(clear, true)
-		afterRenderFn()
+
+		if afterRenderFn != nil {
+			(*afterRenderFn)()
+		}
 
 		time.Sleep(s.config.FrameTime)
 	}
 }
 
-func (s Screen) Iterate(iteratorFn iteratorFunc) {
+func (s Screen) Iterate(iteratorFn iteratorFn) {
 	for y := 0; y < s.Size.H; y++ {
 		for x := 0; x < s.Size.W; x++ {
-			iteratorFn(geometry.Vec2[int]{X: x, Y: y}, s.Matrix[y][x])
+			iteratorFn(geometry.Vec2[int]{X: x, Y: y}, s.matrix[y][x])
 		}
 	}
 }
 
-func (s Screen) Set(position geometry.Vec2[int], value string) {
-	s.Matrix[position.Y][position.X] = value
+func (s Screen) Set(pos geometry.Vec2[int], val string) {
+	s.matrix[pos.Y][pos.X] = val
 }
 
-func (s Screen) IterateAndSet(iteratorFn iteratorSetFunc) {
+func (s Screen) Get(pos geometry.Vec2[int]) string {
+	return s.matrix[pos.Y][pos.X]
+}
+
+func (s Screen) IterateAndSet(iteratorFn iteratorSetFn) {
 	for y := 0; y < s.Size.H; y++ {
 		for x := 0; x < s.Size.W; x++ {
-			setPosition := geometry.Vec2[int]{X: x, Y: y}
+			pos := geometry.Vec2[int]{X: x, Y: y}
 
-			s.Set(setPosition, iteratorFn(setPosition, s.Matrix[y][x]))
+			s.Set(pos, iteratorFn(pos, s.matrix[y][x]))
 		}
 	}
 }
@@ -109,20 +119,4 @@ func (s Screen) Clear() {
 	if err != nil {
 		panic(err.Error())
 	}
-}
-
-// Matrix TODO create separate package matrix
-type Matrix [][]string
-
-func newMatrix(size Size, emptyPixel string) Matrix {
-	var matrix Matrix
-
-	for y := 0; y < size.H; y++ {
-		matrix = append(matrix, []string{})
-		for x := 0; x < size.W; x++ {
-			matrix[y] = append(matrix[y], emptyPixel)
-		}
-	}
-
-	return matrix
 }

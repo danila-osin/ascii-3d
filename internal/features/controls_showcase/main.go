@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type State struct {
+type state struct {
 	offset geometry.Vec2[int]
 }
 
@@ -16,17 +16,17 @@ type ControlsShowcase struct {
 	config   config.Config
 	screen   *screen.Screen
 	controls *controls.Controls
-	state    *State
+	state    *state
 }
 
 func New(config config.Config, screen *screen.Screen) ControlsShowcase {
-	state := &State{offset: geometry.Vec2[int]{X: 0, Y: 0}}
+	st := &state{offset: geometry.Vec2[int]{X: 0, Y: 0}}
 
 	return ControlsShowcase{
 		config:   config,
 		screen:   screen,
-		controls: createControls(config, state),
-		state:    state,
+		controls: createControls(config, st),
+		state:    st,
 	}
 }
 
@@ -47,7 +47,7 @@ func (cs ControlsShowcase) setInitialState() {
 }
 
 func (cs ControlsShowcase) startRenderLoop() {
-	cs.screen.StartRenderLoop(true, func() {
+	brFn := screen.BRenderFn(func() {
 		cs.screen.IterateAndSet(func(rawCursor geometry.Vec2[int], value string) string {
 			if (rawCursor.X+cs.state.offset.X)%5 == 0 {
 				return "x"
@@ -61,5 +61,7 @@ func (cs ControlsShowcase) startRenderLoop() {
 		})
 
 		cs.screen.AddText(geometry.Vec2[int]{X: 5, Y: 5}, cs.controls.Descriptions.Text())
-	}, func() {})
+	})
+
+	cs.screen.StartRenderLoop(true, &brFn, nil)
 }

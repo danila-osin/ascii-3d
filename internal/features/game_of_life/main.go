@@ -62,7 +62,8 @@ func (g GameOfLife) setRandomInitialState() {
 
 func (g GameOfLife) startRenderLoop(frameFn func(frameCounter int)) {
 	frameCounter := 1
-	g.screen.StartRenderLoop(true, func() {
+
+	bRenderFn := screen.BRenderFn(func() {
 		g.screen.IterateAndSet(func(cursor geometry.Vec2[int], value string) string {
 			aliveCount, _ := g.countNeighbours(cursor)
 
@@ -79,31 +80,32 @@ func (g GameOfLife) startRenderLoop(frameFn func(frameCounter int)) {
 				return DeadCell
 			}
 		})
+	})
 
-	}, func() {
+	aRender := screen.ARenderFn(func() {
 		frameFn(frameCounter)
 		frameCounter += 1
 	})
+
+	g.screen.StartRenderLoop(true, &bRenderFn, &aRender)
 }
 
-func (g GameOfLife) countNeighbours(position geometry.Vec2[int]) (alive, dead int) {
-	matrix := g.screen.Matrix
-
-	x := position.X
-	y := position.Y
+func (g GameOfLife) countNeighbours(pos geometry.Vec2[int]) (alive, dead int) {
+	x := pos.X
+	y := pos.Y
 
 	minI := int(math.Max(0, float64(y-1)))
-	maxI := int(math.Min(float64(y+1), float64(len(matrix)-1)))
+	maxI := int(math.Min(float64(y+1), float64(g.screen.Size.H-1)))
 
 	minJ := int(math.Max(0, float64(x-1)))
-	maxJ := int(math.Min(float64(x+1), float64(len(matrix[0])-1)))
+	maxJ := int(math.Min(float64(x+1), float64(g.screen.Size.W-1)))
 
 	for i := minI; i <= maxI; i++ {
 		for j := minJ; j <= maxJ; j++ {
 			if i == y && j == x {
 				continue
 			}
-			if matrix[i][j] == AliveCell {
+			if g.screen.Get(geometry.Vec2[int]{X: j, Y: i}) == AliveCell {
 				alive += 1
 			} else {
 				dead += 1

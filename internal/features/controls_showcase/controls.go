@@ -6,7 +6,7 @@ import (
 	"github.com/danila-osin/ascii-3d/pkg/controls"
 )
 
-func createControls(config config.Config, state *State) *controls.Controls {
+func createControls(config config.Config, state *state) *controls.Controls {
 	actions := []controls.Action{
 		{
 			Keys:        []string{"a"},

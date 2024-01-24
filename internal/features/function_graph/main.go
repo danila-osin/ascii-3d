@@ -13,7 +13,7 @@ import (
 
 var ControlsPosition = geometry.Vec2[int]{X: 2, Y: 2}
 
-type State struct {
+type state struct {
 	cameraPos geometry.Vec2[float64]
 	scale     float64
 }
@@ -21,19 +21,19 @@ type State struct {
 type FunctionGraph struct {
 	config   config.Config
 	screen   *screen.Screen
-	state    *State
+	state    *state
 	controls *controls.Controls
 }
 
 func New(config config.Config, screen *screen.Screen) FunctionGraph {
-	state := &State{cameraPos: geometry.ZeroVec2Float, scale: 1}
+	st := &state{cameraPos: geometry.ZeroVec2Float, scale: 1}
 	screen.PixelSeparator = ""
 
 	return FunctionGraph{
 		config:   config,
 		screen:   screen,
-		state:    state,
-		controls: setupControls(config, state),
+		state:    st,
+		controls: setupControls(config, st),
 	}
 }
 
@@ -66,11 +66,10 @@ func (f FunctionGraph) setInitialState() {
 }
 
 func (f FunctionGraph) startRenderLoop() {
-	frameCounter := uint8(0)
 	a := 0.0
 	direction := 1.0
 
-	f.screen.StartRenderLoop(true, func() {
+	brFn := screen.BRenderFn(func() {
 		f.screen.IterateAndSet(func(rawCursor geometry.Vec2[int], value string) string {
 			x := (float64(rawCursor.X)/float64(f.screen.Size.W)*2.0 - 1) * f.state.scale * f.screen.Aspect * f.config.FontAspect
 			y := (float64(rawCursor.Y)/float64(f.screen.Size.H)*2.0 - 1) * f.state.scale
@@ -94,13 +93,15 @@ func (f FunctionGraph) startRenderLoop() {
 		})
 
 		f.screen.AddText(ControlsPosition, f.controls.Descriptions.Text())
-	}, func() {
-		frameCounter += 1
+	})
 
+	arFn := screen.ARenderFn(func() {
 		if math.Abs(a) > 1 {
 			direction = -direction
 		}
 
 		a += direction * 0.01
 	})
+
+	f.screen.StartRenderLoop(true, &brFn, &arFn)
 }
