@@ -71,7 +71,7 @@ func (f FunctionGraph) startRenderLoop() {
 
 	brFn := screen.BRenderFn(func() {
 		f.screen.IterateAndSet(func(rawCursor geometry.Vec2[int], value string) string {
-			ssVec := geometry.Vec2FromSize[float64](f.screen.Size)
+			ssVec := sizeToVec2[float64](f.screen.Size)
 
 			cursor := rawCursor.Float64().Div(ssVec).MulN(2).SubN(1).MulN(f.state.scale)
 			cursor.X *= f.screen.Aspect * f.config.FontAspect
@@ -105,4 +105,8 @@ func (f FunctionGraph) startRenderLoop() {
 	})
 
 	f.screen.StartRenderLoop(true, &brFn, &arFn)
+}
+
+func sizeToVec2[T calculator.Number](s screen.Size) geometry.Vec2[T] {
+	return geometry.Vec2[T]{X: T(s.W), Y: T(s.H)}
 }
