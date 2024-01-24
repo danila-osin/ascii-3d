@@ -1,7 +1,7 @@
 package geometry
 
 import (
-	"github.com/danila-osin/ascii-3d/pkg/calculator"
+	"github.com/danila-osin/ascii-3d/pkg/mathx"
 	"math"
 )
 
@@ -10,7 +10,7 @@ var (
 	ZeroVec3Float = Vec3[float64]{X: 0, Y: 0}
 )
 
-type Vec3[T calculator.Number] struct {
+type Vec3[T mathx.Number] struct {
 	X, Y, Z T
 }
 

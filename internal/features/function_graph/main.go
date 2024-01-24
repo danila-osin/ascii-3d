@@ -2,9 +2,9 @@ package function_graph
 
 import (
 	"github.com/danila-osin/ascii-3d/internal/config"
-	"github.com/danila-osin/ascii-3d/pkg/calculator"
 	"github.com/danila-osin/ascii-3d/pkg/controls"
 	"github.com/danila-osin/ascii-3d/pkg/geometry"
+	"github.com/danila-osin/ascii-3d/pkg/mathx"
 	"github.com/danila-osin/ascii-3d/pkg/screen"
 	"github.com/danila-osin/ascii-3d/pkg/shapes"
 	"math"
@@ -51,11 +51,11 @@ func (f FunctionGraph) setInitialState() {
 		x := float64(rawCursor.X)/float64(f.screen.Size.W)*2.0 - 1
 		y := float64(rawCursor.Y)/float64(f.screen.Size.H)*2.0 - 1
 
-		if calculator.Eq(y, 0, 0) {
+		if mathx.Eq(y, 0, 0) {
 			return "."
 		}
 
-		if calculator.Eq(x, 0, 0) {
+		if mathx.Eq(x, 0, 0) {
 			return "."
 		}
 
@@ -82,11 +82,11 @@ func (f FunctionGraph) startRenderLoop() {
 				return "x"
 			}
 
-			if calculator.Eq(cursor.Y, 0, 0.005) {
+			if mathx.Eq(cursor.Y, 0, 0.005) {
 				return "."
 			}
 
-			if calculator.Eq(cursor.X, 0, 0.005) {
+			if mathx.Eq(cursor.X, 0, 0.005) {
 				return "."
 			}
 
@@ -107,6 +107,6 @@ func (f FunctionGraph) startRenderLoop() {
 	f.screen.StartRenderLoop(true, &brFn, &arFn)
 }
 
-func sizeToVec2[T calculator.Number](s screen.Size) geometry.Vec2[T] {
+func sizeToVec2[T mathx.Number](s screen.Size) geometry.Vec2[T] {
 	return geometry.Vec2[T]{X: T(s.W), Y: T(s.H)}
 }

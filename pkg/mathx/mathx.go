@@ -1,4 +1,4 @@
-package calculator
+package mathx
 
 type Number interface {
 	int | float64
