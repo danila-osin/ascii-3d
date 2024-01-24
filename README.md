@@ -9,21 +9,26 @@ ASCII 3d/2d render engine for console
 * ~~Framerate Setting~~
 * ~~Screen Size Setting~~
 * ~~Keyboard controls~~
+  * ~~listening keyboard key presses~~
   * ~~controls description on screen~~
+* Realtime screen size changing
 * Configuration using TOML file
+* Profiling(`pprof`)
 
 ### 2D
 * Game of Life (`playable`)
   * ~~setting field size~~
   * setting initial state by keyboard
   * changing field size by keyboard
-* Function Graph (`in progress`)
-  * research rasterisation
-  * scaling
-  * moving
-  * dynamic parameter
-  * keyboard(scaling, moving, changing parameter)
-* Text
+* Function Graph (`almost done`)
+  * research rasterisation(`low priority`)
+  * ~~scaling~~
+  * ~~moving~~
+  * ~~dynamic parameter~~ 
+  * ~~keyboard(scaling, moving, changing parameter)~~
+* ~~Screen Text~~(`done`)
+  * ~~framing~~
+* Text Generators(`low priority`)
   * scaling
   * moving
   * keyboard(scaling, moving)
@@ -31,7 +36,7 @@ ASCII 3d/2d render engine for console
 
 ### 3D
 * General
-  * light gradient
+  * ~~color/light gradient~~
 * Shapes
   * setting shape
   * setting camera point of view
