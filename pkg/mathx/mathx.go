@@ -35,3 +35,19 @@ func Clamp[T Number](val, min, max T) T {
 
 	return val
 }
+
+func Sign(a float64) float64 {
+	if a > 0 {
+		return 1
+	} else if a < 0 {
+		return -1
+	}
+	return 0
+}
+
+func Step(edge, x float64) float64 {
+	if x > edge {
+		return 1
+	}
+	return 0
+}

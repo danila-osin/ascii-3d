@@ -43,6 +43,14 @@ func (v Vec3[T]) Norm() Vec3[float64] {
 	}
 }
 
+func (v Vec3[T]) Abs() Vec3[T] {
+	return Vec3[T]{
+		X: T(math.Abs(float64(v.X))),
+		Y: T(math.Abs(float64(v.Y))),
+		Z: T(math.Abs(float64(v.Z))),
+	}
+}
+
 func (v Vec3[T]) Add(o Vec3[T]) Vec3[T] {
 	return Vec3[T]{
 		X: v.X + o.X,
@@ -109,4 +117,20 @@ func (v Vec3[T]) DivN(n T) Vec3[T] {
 
 func (v Vec3[T]) Dot(o Vec3[T]) T {
 	return v.X*o.X + v.Y*o.Y + v.Z*o.Z
+}
+
+func (v Vec3[T]) Step(edge Vec3[T]) Vec3[T] {
+	return Vec3[T]{
+		X: T(mathx.Step(float64(edge.X), float64(v.X))),
+		Y: T(mathx.Step(float64(edge.Y), float64(v.Y))),
+		Z: T(mathx.Step(float64(edge.Z), float64(v.Z))),
+	}
+}
+
+func (v Vec3[T]) Sign() Vec3[T] {
+	return Vec3[T]{
+		X: T(mathx.Sign(float64(v.X))),
+		Y: T(mathx.Sign(float64(v.Y))),
+		Z: T(mathx.Sign(float64(v.Z))),
+	}
 }

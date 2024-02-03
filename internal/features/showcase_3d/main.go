@@ -2,48 +2,56 @@ package showcase_3d
 
 import (
 	"github.com/danila-osin/ascii-3d/internal/config"
+	"github.com/danila-osin/ascii-3d/pkg/controls"
 	"github.com/danila-osin/ascii-3d/pkg/geometry"
 	"github.com/danila-osin/ascii-3d/pkg/mathx"
+	rot "github.com/danila-osin/ascii-3d/pkg/rotation"
 	"github.com/danila-osin/ascii-3d/pkg/screen"
 	"github.com/danila-osin/ascii-3d/pkg/shapes"
-	"math"
 )
 
-var defaultColors = []string{" ", ".", ":", "!", "/", "r", "(", "l", "1", "Z", "4", "H", "9", "W", "8", "$", "@"}
-
-type state struct {
-	colors     []string
-	colorsSize int
-	cameraPos  geometry.Vec3[float64]
-}
+var (
+	controlsPosition = geometry.Vec2[int]{X: 0, Y: 0}
+	maxDist          = 999.9
+)
 
 type Showcase3D struct {
-	config config.Config
-	screen *screen.Screen
-	state  *state
+	config   config.Config
+	screen   *screen.Screen
+	state    *state
+	controls *controls.Controls
 }
 
 func New(config config.Config, screen *screen.Screen) Showcase3D {
 	st := &state{
-		colors:     defaultColors,
-		colorsSize: len(defaultColors),
-		cameraPos:  geometry.Vec3[float64]{X: 0, Y: 0, Z: 2},
+		colors:           defaultColors,
+		colorsSize:       len(defaultColors),
+		cameraRot:        rot.ZeroRotation,
+		cameraPos:        geometry.Vec3[float64]{X: -5, Y: 0, Z: 0},
+		initialCameraDir: geometry.Vec3[float64]{X: 1, Y: 0, Z: 0},
 	}
 
 	return Showcase3D{
-		config: config,
-		screen: screen,
-		state:  st,
+		config:   config,
+		screen:   screen,
+		state:    st,
+		controls: setupControls(config, st),
 	}
 }
 
 func (s Showcase3D) Run() {
+	go s.controls.Listen()
 	s.startRenderLoop()
 }
 
 func (s Showcase3D) startRenderLoop() {
-	light := geometry.Vec3[float64]{X: 0, Y: 0, Z: 0}.Norm()
-	fr := 0
+	light := geometry.Vec3[float64]{X: 0, Y: 0, Z: -2}.Norm()
+
+	sphere1 := shapes.NewSphere(geometry.Vec3[float64]{X: 0, Y: 1, Z: 0}, 1)
+	sphere2 := shapes.NewSphere(geometry.Vec3[float64]{X: 0, Y: 3, Z: 0}, 1)
+	box := shapes.NewBox(geometry.Vec3[float64]{X: 1, Y: 1, Z: 1}, geometry.Vec3[float64]{X: 0, Y: -2, Z: 0})
+	plane := shapes.NewPlane(geometry.Vec3[float64]{X: 0, Y: 0, Z: -1}, 1)
+
 	brFn := screen.BRenderFn(func() {
 		s.screen.IterateAndSet(func(rawCursor geometry.Vec2[int], value string) string {
 			ssVec := sizeToVec2[float64](s.screen.Size)
@@ -51,29 +59,52 @@ func (s Showcase3D) startRenderLoop() {
 			cursor := rawCursor.Float64().Div(ssVec).MulN(2).SubN(1)
 			cursor.X *= s.screen.Aspect * s.config.FontAspect
 
-			ro := geometry.Vec3[float64]{X: 0, Y: 0, Z: -2}
-			rd := cursor.Vec3(1).Norm()
+			camRayDir := rot.RotateVec3Intrinsic(s.state.cameraRot, s.state.initialCameraDir.Add(cursor.Vec3(0))).Norm()
 
-			i := shapes.Sphere(ro, rd, 1)
-			if i.X > 0 {
-				it := ro.Add(rd.MulN(i.X))
-				n := it.Norm()
+			minIt := geometry.Vec2[float64]{X: maxDist, Y: maxDist}
+			var n geometry.Vec3[float64]
+
+			// Sphere 1
+			sphere1It := sphere1.Intersect(s.state.cameraPos, camRayDir)
+			if sphere1It.X > 0 && sphere1It.X < minIt.X {
+				minIt = sphere1It
+				it := s.state.cameraPos.Add(camRayDir.MulN(sphere1It.X))
+				n = it.Norm()
+			}
+
+			sphere2It := sphere2.Intersect(s.state.cameraPos, camRayDir)
+			if sphere2It.X > 0 && sphere2It.X < minIt.X {
+				minIt = sphere2It
+				it := s.state.cameraPos.Add(camRayDir.MulN(sphere2It.X))
+				n = it.Norm()
+			}
+
+			// Box
+			boxIt, boxNorm := box.Intersect(s.state.cameraPos, camRayDir)
+			if boxIt.X > 0 && boxIt.X < minIt.X {
+				minIt = boxIt
+				n = boxNorm.Norm()
+			}
+
+			if minIt.X != maxDist {
 				d := n.Dot(light)
-				color := mathx.Clamp(int(d*20), 0, s.state.colorsSize-1)
+				color := mathx.Clamp(int(d*50), 2, s.state.colorsSize-1)
 				return s.state.colors[color]
+			}
+
+			// Plane
+			planeIt := plane.Intersect(s.state.cameraPos, camRayDir)
+			if planeIt > 0 {
+				return s.state.colors[1]
 			}
 
 			return s.screen.EmptyPixel
 		})
+
+		s.screen.AddText(controlsPosition, s.controls.Descriptions.Text())
 	})
 
-	aRenderFn := screen.ARenderFn(func() {
-		fr += 1
-
-		light = geometry.Vec3[float64]{X: math.Sin(float64(fr) * 0.01), Y: math.Sin(float64(fr) * 0.01), Z: -1}.Norm()
-	})
-
-	s.screen.StartRenderLoop(true, &brFn, &aRenderFn)
+	s.screen.StartRenderLoop(true, &brFn, nil)
 }
 
 func sizeToVec2[T mathx.Number](s screen.Size) geometry.Vec2[T] {
