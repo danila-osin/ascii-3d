@@ -6,131 +6,148 @@ import (
 )
 
 var (
-	ZeroVec3Int   = Vec3[int]{X: 0, Y: 0}
-	ZeroVec3Float = Vec3[float64]{X: 0, Y: 0}
+	ZeroVec3Float = Vec3{X: 0, Y: 0}
 )
 
-type Vec3[T mathx.Number] struct {
-	X, Y, Z T
+type Vec3 struct {
+	X, Y, Z float64
 }
 
-func (v Vec3[T]) Int() Vec3[int] {
-	return Vec3[int]{
-		X: int(v.X),
-		Y: int(v.Y),
-		Z: int(v.Z),
-	}
+func (v Vec3) Len() float64 {
+	return math.Sqrt(v.Dot(v))
 }
 
-func (v Vec3[T]) Float64() Vec3[float64] {
-	return Vec3[float64]{
-		X: float64(v.X),
-		Y: float64(v.Y),
-		Z: float64(v.Z),
-	}
-}
-
-func (v Vec3[T]) Len() float64 {
-	return math.Sqrt(float64(v.Dot(v)))
-}
-
-func (v Vec3[T]) Norm() Vec3[float64] {
+func (v Vec3) Norm() Vec3 {
 	l := v.Len()
-	return Vec3[float64]{
-		X: float64(v.X) / l,
-		Y: float64(v.Y) / l,
-		Z: float64(v.Z) / l,
+	return Vec3{
+		X: v.X / l,
+		Y: v.Y / l,
+		Z: v.Z / l,
 	}
 }
 
-func (v Vec3[T]) Abs() Vec3[T] {
-	return Vec3[T]{
-		X: T(math.Abs(float64(v.X))),
-		Y: T(math.Abs(float64(v.Y))),
-		Z: T(math.Abs(float64(v.Z))),
+func (v Vec3) Abs() Vec3 {
+	return Vec3{
+		X: math.Abs(v.X),
+		Y: math.Abs(v.Y),
+		Z: math.Abs(v.Z),
 	}
 }
 
-func (v Vec3[T]) Add(o Vec3[T]) Vec3[T] {
-	return Vec3[T]{
+func (v Vec3) Add(o Vec3) Vec3 {
+	return Vec3{
 		X: v.X + o.X,
 		Y: v.Y + o.Y,
 		Z: v.Z + o.Z,
 	}
 }
 
-func (v Vec3[T]) Sub(o Vec3[T]) Vec3[T] {
-	return Vec3[T]{
+func (v Vec3) Sub(o Vec3) Vec3 {
+	return Vec3{
 		X: v.X - o.X,
 		Y: v.Y - o.Y,
 		Z: v.Z - o.Z,
 	}
 }
 
-func (v Vec3[T]) Mul(o Vec3[T]) Vec3[T] {
-	return Vec3[T]{
+func (v Vec3) Mul(o Vec3) Vec3 {
+	return Vec3{
 		X: v.X * o.X,
 		Y: v.Y * o.Y,
 		Z: v.Z * o.Z,
 	}
 }
 
-func (v Vec3[T]) Div(o Vec3[T]) Vec3[T] {
-	return Vec3[T]{
-		X: v.X / o.X,
-		Y: v.Y / o.Y,
-		Z: v.Z / o.Z,
+func (v Vec3) Div(o Vec3) Vec3 {
+	res := Vec3{}
+
+	if o.X == 0 {
+		res.X = math.MaxFloat64
+	} else {
+		res.X = v.X / o.X
 	}
+
+	if o.Y == 0 {
+		res.Y = math.MaxFloat64
+	} else {
+		res.Y = v.Y / o.Y
+	}
+
+	if o.Z == 0 {
+		res.Z = math.MaxFloat64
+	} else {
+		res.Z = v.Z / o.Z
+	}
+
+	return res
 }
 
-func (v Vec3[T]) AddN(n T) Vec3[T] {
-	return Vec3[T]{
+func (v Vec3) AddN(n float64) Vec3 {
+	return Vec3{
 		X: v.X + n,
 		Y: v.Y + n,
 		Z: v.Z + n,
 	}
 }
 
-func (v Vec3[T]) SubN(n T) Vec3[T] {
-	return Vec3[T]{
+func (v Vec3) SubN(n float64) Vec3 {
+	return Vec3{
 		X: v.X - n,
 		Y: v.Y - n,
 		Z: v.Z - n,
 	}
 }
 
-func (v Vec3[T]) MulN(n T) Vec3[T] {
-	return Vec3[T]{
+func (v Vec3) MulN(n float64) Vec3 {
+	return Vec3{
 		X: v.X * n,
 		Y: v.Y * n,
 		Z: v.Z * n,
 	}
 }
 
-func (v Vec3[T]) DivN(n T) Vec3[T] {
-	return Vec3[T]{
+func (v Vec3) DivN(n float64) Vec3 {
+	return Vec3{
 		X: v.X / n,
 		Y: v.Y / n,
 		Z: v.Z / n,
 	}
 }
 
-func (v Vec3[T]) Dot(o Vec3[T]) T {
+func (v Vec3) Dot(o Vec3) float64 {
 	return v.X*o.X + v.Y*o.Y + v.Z*o.Z
 }
 
-func (v Vec3[T]) Step(edge Vec3[T]) Vec3[T] {
-	return Vec3[T]{
-		X: T(mathx.Step(float64(edge.X), float64(v.X))),
-		Y: T(mathx.Step(float64(edge.Y), float64(v.Y))),
-		Z: T(mathx.Step(float64(edge.Z), float64(v.Z))),
+func (v Vec3) Reflect(o Vec3) Vec3 {
+	return v.Sub(o.MulN(o.Dot(v) * 2))
+}
+
+func (v Vec3) Step(edge Vec3) Vec3 {
+	return Vec3{
+		X: mathx.Step(edge.X, v.X),
+		Y: mathx.Step(edge.Y, v.Y),
+		Z: mathx.Step(edge.Z, v.Z),
 	}
 }
 
-func (v Vec3[T]) Sign() Vec3[T] {
-	return Vec3[T]{
-		X: T(mathx.Sign(float64(v.X))),
-		Y: T(mathx.Sign(float64(v.Y))),
-		Z: T(mathx.Sign(float64(v.Z))),
+func (v Vec3) Sign() Vec3 {
+	return Vec3{
+		X: mathx.Sign(v.X),
+		Y: mathx.Sign(v.Y),
+		Z: mathx.Sign(v.Z),
+	}
+}
+
+func (v Vec3) MinAxis() Axis {
+	minComp := math.Min(math.Min(v.X, v.Y), v.Z)
+
+	if v.X == minComp {
+		return XAxis
+	}
+
+	if v.Y == minComp {
+		return YAxis
+	} else {
+		return ZAxis
 	}
 }

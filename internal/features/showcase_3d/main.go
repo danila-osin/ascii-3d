@@ -27,8 +27,8 @@ func New(config config.Config, screen *screen.Screen) Showcase3D {
 		colors:           defaultColors,
 		colorsSize:       len(defaultColors),
 		cameraRot:        rot.ZeroRotation,
-		cameraPos:        geometry.Vec3[float64]{X: -5, Y: 0, Z: 0},
-		initialCameraDir: geometry.Vec3[float64]{X: 1, Y: 0, Z: 0},
+		cameraPos:        geometry.Vec3{X: -5, Y: 0, Z: 0},
+		initialCameraDir: geometry.Vec3{X: 1, Y: 0, Z: 0},
 	}
 
 	return Showcase3D{
@@ -45,12 +45,12 @@ func (s Showcase3D) Run() {
 }
 
 func (s Showcase3D) startRenderLoop() {
-	light := geometry.Vec3[float64]{X: 0, Y: 0, Z: -2}.Norm()
+	light := geometry.Vec3{X: -20, Y: 70, Z: -100}.Norm()
 
-	sphere1 := shapes.NewSphere(geometry.Vec3[float64]{X: 0, Y: 1, Z: 0}, 1)
-	sphere2 := shapes.NewSphere(geometry.Vec3[float64]{X: 0, Y: 3, Z: 0}, 1)
-	box := shapes.NewBox(geometry.Vec3[float64]{X: 1, Y: 1, Z: 1}, geometry.Vec3[float64]{X: 0, Y: -2, Z: 0})
-	plane := shapes.NewPlane(geometry.Vec3[float64]{X: 0, Y: 0, Z: -1}, 1)
+	sphere1 := shapes.NewSphere(1, geometry.Vec3{X: 0, Y: 1, Z: 0})
+	sphere2 := shapes.NewSphere(2, geometry.Vec3{X: 0, Y: 5, Z: 0})
+	box := shapes.NewBox(geometry.Vec3{X: 1, Y: 2, Z: 0.5}, geometry.Vec3{X: 0, Y: -3, Z: 0})
+	//plane := shapes.NewPlane(geometry.Vec3{X: 0, Y: 0, Z: -1}, 1)
 
 	brFn := screen.BRenderFn(func() {
 		s.screen.IterateAndSet(func(rawCursor geometry.Vec2[int], value string) string {
@@ -62,41 +62,42 @@ func (s Showcase3D) startRenderLoop() {
 			camRayDir := rot.RotateVec3Intrinsic(s.state.cameraRot, s.state.initialCameraDir.Add(cursor.Vec3(0))).Norm()
 
 			minIt := geometry.Vec2[float64]{X: maxDist, Y: maxDist}
-			var n geometry.Vec3[float64]
+			var n geometry.Vec3
 
 			// Sphere 1
 			sphere1It := sphere1.Intersect(s.state.cameraPos, camRayDir)
 			if sphere1It.X > 0 && sphere1It.X < minIt.X {
 				minIt = sphere1It
-				it := s.state.cameraPos.Add(camRayDir.MulN(sphere1It.X))
+				it := s.state.cameraPos.Sub(sphere1.Pos).Add(camRayDir.MulN(sphere1It.X))
 				n = it.Norm()
 			}
 
 			sphere2It := sphere2.Intersect(s.state.cameraPos, camRayDir)
 			if sphere2It.X > 0 && sphere2It.X < minIt.X {
 				minIt = sphere2It
-				it := s.state.cameraPos.Add(camRayDir.MulN(sphere2It.X))
+				it := s.state.cameraPos.Sub(sphere2.Pos).Add(camRayDir.MulN(sphere2It.X))
 				n = it.Norm()
 			}
 
 			// Box
-			boxIt, boxNorm := box.Intersect(s.state.cameraPos, camRayDir)
+			boxIt, outNormal := box.Intersect(s.state.cameraPos, camRayDir)
 			if boxIt.X > 0 && boxIt.X < minIt.X {
 				minIt = boxIt
-				n = boxNorm.Norm()
+				n = outNormal.Norm()
 			}
 
-			if minIt.X != maxDist {
+			if minIt.X < maxDist {
+
 				d := n.Dot(light)
-				color := mathx.Clamp(int(d*50), 2, s.state.colorsSize-1)
+				color := mathx.Clamp(int(d*20), 2, s.state.colorsSize-1)
 				return s.state.colors[color]
 			}
 
-			// Plane
-			planeIt := plane.Intersect(s.state.cameraPos, camRayDir)
-			if planeIt > 0 {
-				return s.state.colors[1]
-			}
+			//Plane
+			//planeIt := plane.Intersect(s.state.cameraPos, camRayDir)
+			//if planeIt > 0 {
+			//	return s.state.colors[1]
+			//}
 
 			return s.screen.EmptyPixel
 		})

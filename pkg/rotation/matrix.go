@@ -80,10 +80,10 @@ func RotateMatrixIntrinsic(rot Rotation, m matrix.Matrix[float64]) matrix.Matrix
 	return rm.Mul(m)
 }
 
-func RotateVec3(axis geometry.Axis, angle angle.Angle, v geometry.Vec3[float64]) geometry.Vec3[float64] {
-	return RotateMatrix(angle, matrix.FromVec3(v), axis).Vec3()
+func RotateVec3(axis geometry.Axis, angle angle.Angle, v geometry.Vec3) geometry.Vec3 {
+	return RotateMatrix(angle, matrix.FromVec3[float64](v), axis).Vec3()
 }
 
-func RotateVec3Intrinsic(rot Rotation, v geometry.Vec3[float64]) geometry.Vec3[float64] {
-	return RotateMatrixIntrinsic(rot, matrix.FromVec3(v)).Vec3()
+func RotateVec3Intrinsic(rot Rotation, v geometry.Vec3) geometry.Vec3 {
+	return RotateMatrixIntrinsic(rot, matrix.FromVec3[float64](v)).Vec3()
 }

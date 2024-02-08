@@ -1,5 +1,7 @@
 package mathx
 
+import "math"
+
 type Number interface {
 	int | float64
 }
@@ -37,12 +39,7 @@ func Clamp[T Number](val, min, max T) T {
 }
 
 func Sign(a float64) float64 {
-	if a > 0 {
-		return 1
-	} else if a < 0 {
-		return -1
-	}
-	return 0
+	return math.Copysign(a, 1)
 }
 
 func Step(edge, x float64) float64 {

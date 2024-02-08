@@ -10,7 +10,8 @@ import (
 	"os"
 )
 
-var cameraSens = 2.5
+var cameraSens = 5.0
+var moveSens = 2.5
 
 func setupControls(config config.Config, state *state) *controls.Controls {
 	actions := []controls.Action{
@@ -19,7 +20,7 @@ func setupControls(config config.Config, state *state) *controls.Controls {
 			Description: "Move Forward x+",
 			Handlers: []controls.ActionHandler{
 				func(_ *controls.Controls) {
-					v := state.cameraDir().MulN(0.1)
+					v := state.cameraDir().MulN(0.1 * moveSens)
 					state.cameraPos = state.cameraPos.Add(v)
 				},
 			},
@@ -29,7 +30,7 @@ func setupControls(config config.Config, state *state) *controls.Controls {
 			Description: "Move Backward x-",
 			Handlers: []controls.ActionHandler{
 				func(_ *controls.Controls) {
-					v := state.cameraDir().MulN(-0.1)
+					v := state.cameraDir().MulN(-0.1 * moveSens)
 					state.cameraPos = state.cameraPos.Add(v)
 				},
 			},
@@ -41,7 +42,7 @@ func setupControls(config config.Config, state *state) *controls.Controls {
 				func(_ *controls.Controls) {
 					camDir := state.cameraDir()
 					camDir.Z = 0
-					v := rot.RotateVec3(geometry.ZAxis, angle.Degree(90), camDir).MulN(0.1)
+					v := rot.RotateVec3(geometry.ZAxis, angle.Degree(90), camDir).MulN(0.1 * moveSens)
 					state.cameraPos = state.cameraPos.Add(v)
 				},
 			},
@@ -53,7 +54,7 @@ func setupControls(config config.Config, state *state) *controls.Controls {
 				func(_ *controls.Controls) {
 					camDir := state.cameraDir()
 					camDir.Z = 0
-					v := rot.RotateVec3(geometry.ZAxis, angle.Degree(-90), camDir).MulN(0.1)
+					v := rot.RotateVec3(geometry.ZAxis, angle.Degree(-90), camDir).MulN(0.1 * moveSens)
 					state.cameraPos = state.cameraPos.Add(v)
 				},
 			},
@@ -63,7 +64,7 @@ func setupControls(config config.Config, state *state) *controls.Controls {
 			Description: "Move Up z-",
 			Handlers: []controls.ActionHandler{
 				func(_ *controls.Controls) {
-					state.cameraPos.Z -= 0.1
+					state.cameraPos.Z -= 0.1 * moveSens
 				},
 			},
 		},
@@ -72,7 +73,7 @@ func setupControls(config config.Config, state *state) *controls.Controls {
 			Description: "Move Down z+",
 			Handlers: []controls.ActionHandler{
 				func(_ *controls.Controls) {
-					state.cameraPos.Z += 0.1
+					state.cameraPos.Z += 0.1 * moveSens
 				},
 			},
 		},

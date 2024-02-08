@@ -6,18 +6,18 @@ import (
 )
 
 type Sphere struct {
-	center geometry.Vec3[float64]
-	radius float64
+	Pos geometry.Vec3
+	Rad float64
 }
 
-func NewSphere(center geometry.Vec3[float64], radius float64) Sphere {
-	return Sphere{center: center, radius: radius}
+func NewSphere(radius float64, position geometry.Vec3) Sphere {
+	return Sphere{Pos: position, Rad: radius}
 }
 
-func (s Sphere) Intersect(ro, rd geometry.Vec3[float64]) geometry.Vec2[float64] {
-	l := ro.Sub(s.center)
+func (s Sphere) Intersect(ro, rd geometry.Vec3) geometry.Vec2[float64] {
+	l := ro.Sub(s.Pos)
 	b := l.Dot(rd)
-	c := l.Dot(l) - s.radius*s.radius
+	c := l.Dot(l) - s.Rad*s.Rad
 	h := b*b - c
 
 	if h < 0 {

@@ -13,10 +13,10 @@ type state struct {
 	colors           []string
 	colorsSize       int
 	cameraRot        rot.Rotation
-	cameraPos        geometry.Vec3[float64]
-	initialCameraDir geometry.Vec3[float64]
+	cameraPos        geometry.Vec3
+	initialCameraDir geometry.Vec3
 }
 
-func (s state) cameraDir() geometry.Vec3[float64] {
+func (s state) cameraDir() geometry.Vec3 {
 	return rot.RotateVec3Intrinsic(s.cameraRot, s.initialCameraDir).Norm()
 }

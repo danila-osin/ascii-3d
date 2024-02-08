@@ -20,19 +20,19 @@ func New[T mathx.Number](m [][]T) Matrix[T] {
 	}
 }
 
-func FromVec3[T mathx.Number](v geometry.Vec3[T]) Matrix[T] {
+func FromVec3[T mathx.Number](v geometry.Vec3) Matrix[T] {
 	return New([][]T{
-		{v.X},
-		{v.Y},
-		{v.Z},
+		{T(v.X)},
+		{T(v.Y)},
+		{T(v.Z)},
 	})
 }
 
-func (m Matrix[T]) Vec3() geometry.Vec3[T] {
-	return geometry.Vec3[T]{
-		X: m.Get(0, 0),
-		Y: m.Get(1, 0),
-		Z: m.Get(2, 0),
+func (m Matrix[T]) Vec3() geometry.Vec3 {
+	return geometry.Vec3{
+		X: float64(m.Get(0, 0)),
+		Y: float64(m.Get(1, 0)),
+		Z: float64(m.Get(2, 0)),
 	}
 }
 

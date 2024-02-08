@@ -14,11 +14,11 @@ type Vec2[T mathx.Number] struct {
 	X, Y T
 }
 
-func (v Vec2[T]) Vec3(x T) Vec3[T] {
-	return Vec3[T]{
-		X: x,
-		Y: v.X,
-		Z: v.Y,
+func (v Vec2[T]) Vec3(x T) Vec3 {
+	return Vec3{
+		X: float64(x),
+		Y: float64(v.X),
+		Z: float64(v.Y),
 	}
 }
 
