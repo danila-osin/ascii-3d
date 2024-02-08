@@ -68,7 +68,7 @@ func parseFlags() appFlags {
 	screenWidth := flag.Int("w", 50, "Screen Width")
 	frameRate := flag.Int("fr", 20, "Frame Rate")
 	fontAspect := flag.Float64("fa", 0.4, "Font Aspect")
-	mode := flag.String("m", "unknown", "App Mode [life, graph]")
+	mode := flag.String("m", "unknown", "App Mode [life, graph, controls, 3d]")
 
 	flag.Parse()
 

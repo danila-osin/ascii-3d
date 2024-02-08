@@ -2,6 +2,37 @@
 ## Description
 ASCII 3d/2d render engine for console
 
+## Usage
+### go run
+`go run cmd/main.go [params]`
+```bash
+params:
+  -w int // Screen Width (default 50)
+  
+  -h int // Screen Height (default 50)
+  
+  -fr int // Frame Rate (default 20)
+  
+  -m string // App Mode [life, graph, controls, 3d] (default "unknown")
+  
+  -fa float // Font Aspect (default 0.4)
+```
+### make
+`make run [params]`
+
+```bash
+params:
+  w=int // Screen Width (default 50)
+  
+  h=int // Screen Height (default 50)
+  
+  fr=int // Frame Rate (default 20)
+  
+  m=string // App Mode [life, graph, controls, 3d] (default "unknown")
+  
+  fa=float // Font Aspect (default 0.4)
+```
+
 
 ## TODO
 
