@@ -38,7 +38,7 @@ ASCII 3d/2d render engine for console
 * General
   * ~~color/light gradient~~
 * Shapes
-  * setting shape
-  * setting camera point of view
-  * setting light source
-  * keyboard(camera moving, changing shape)
+  * ~~setting shape~~
+  * ~~setting camera point of view~~
+  * ~~setting light source~~
+  * ~~keyboard(camera moving, changing shape)~~
