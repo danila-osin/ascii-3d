@@ -54,7 +54,7 @@ func (s Showcase3D) startRenderLoop() {
 
 	brFn := screen.BRenderFn(func() {
 		s.screen.IterateAndSet(func(rawCursor geometry.Vec2[int], value string) string {
-			ssVec := sizeToVec2[float64](s.screen.Size)
+			ssVec := sizeToVec2[float64](s.screen.Size())
 
 			cursor := rawCursor.Float64().Div(ssVec).MulN(2).SubN(1)
 			cursor.X *= s.screen.Aspect * s.config.FontAspect

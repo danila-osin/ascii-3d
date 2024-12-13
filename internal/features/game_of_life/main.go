@@ -95,10 +95,10 @@ func (g GameOfLife) countNeighbours(pos geometry.Vec2[int]) (alive, dead int) {
 	y := pos.Y
 
 	minI := int(math.Max(0, float64(y-1)))
-	maxI := int(math.Min(float64(y+1), float64(g.screen.Size.H-1)))
+	maxI := int(math.Min(float64(y+1), float64(g.screen.Size().H-1)))
 
 	minJ := int(math.Max(0, float64(x-1)))
-	maxJ := int(math.Min(float64(x+1), float64(g.screen.Size.W-1)))
+	maxJ := int(math.Min(float64(x+1), float64(g.screen.Size().W-1)))
 
 	for i := minI; i <= maxI; i++ {
 		for j := minJ; j <= maxJ; j++ {

@@ -48,8 +48,8 @@ func (f FunctionGraph) Run() {
 
 func (f FunctionGraph) setInitialState() {
 	f.screen.IterateAndSet(func(rawCursor geometry.Vec2[int], value string) string {
-		x := float64(rawCursor.X)/float64(f.screen.Size.W)*2.0 - 1
-		y := float64(rawCursor.Y)/float64(f.screen.Size.H)*2.0 - 1
+		x := float64(rawCursor.X)/float64(f.screen.Size().W)*2.0 - 1
+		y := float64(rawCursor.Y)/float64(f.screen.Size().H)*2.0 - 1
 
 		if mathx.Eq(y, 0, 0) {
 			return "."
@@ -71,7 +71,7 @@ func (f FunctionGraph) startRenderLoop() {
 
 	brFn := screen.BRenderFn(func() {
 		f.screen.IterateAndSet(func(rawCursor geometry.Vec2[int], value string) string {
-			ssVec := sizeToVec2[float64](f.screen.Size)
+			ssVec := sizeToVec2[float64](f.screen.Size())
 
 			cursor := rawCursor.Float64().Div(ssVec).MulN(2).SubN(1).MulN(f.state.scale)
 			cursor.X *= f.screen.Aspect * f.config.FontAspect

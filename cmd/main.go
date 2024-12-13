@@ -23,7 +23,15 @@ func main() {
 	flags := parseFlags()
 
 	c := config.New(flags.screenHeight, flags.screenWidth, flags.frameRate, flags.fontAspect)
-	s := screen.New(c, "", " ")
+	s := screen.New(screen.Props{
+		Size: screen.Size{
+			W: c.ScreenWidth,
+			H: c.ScreenHeight,
+		},
+		Framerate:  c.Framerate,
+		FrameTime:  c.FrameTime,
+		FontAspect: c.FontAspect,
+	}, "", " ")
 
 	switch flags.mode {
 	case "life":
