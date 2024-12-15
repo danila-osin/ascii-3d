@@ -80,6 +80,10 @@ func (s *Screen) Iterate(iteratorFn iteratorFn) {
 }
 
 func (s *Screen) Set(pos geometry.Vec2[int], val string) {
+	if pos.Y >= s.props.Size.H || pos.X >= s.props.Size.W {
+		return
+	}
+
 	s.matrix[pos.Y][pos.X] = val
 }
 
